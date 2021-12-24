@@ -1,9 +1,12 @@
 ﻿using DockerAspNetCoreMvc.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,10 +15,53 @@ namespace DockerAspNetCoreMvc.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IFileProvider _fileProvider;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IFileProvider fileProvider)
         {
             _logger = logger;
+            _fileProvider = fileProvider;
+        }
+
+        public IActionResult ImageShow()
+        {
+            var images = _fileProvider.GetDirectoryContents("wwwroot/images").ToList().Select(x => x.Name);
+
+            return View(images);
+        }
+
+        [HttpPost]
+        public IActionResult ImageShow(string name)
+        {
+            var file = _fileProvider.GetDirectoryContents("wwwroot/images").ToList().FirstOrDefault(x => x.Name == name);
+
+            if (file != null)
+            {
+                System.IO.File.Delete(file.PhysicalPath);
+            }
+
+            return RedirectToAction("ImageShow");
+        }
+
+        public IActionResult ImageSave()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImageSave(IFormFile imageFile)
+        {
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+            }
+            return View();
         }
 
         public IActionResult Index()
