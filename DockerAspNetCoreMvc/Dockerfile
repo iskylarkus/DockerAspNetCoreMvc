@@ -9,7 +9,61 @@ FROM mcr.microsoft.com/dotnet/aspnet:3.1
 WORKDIR /app
 COPY --from=build /app/out .
 ENV ASPNETCORE_URLS="http://*:4500"
+# ENV ASPNETCORE_ENVIRONMENT="DEVELOPMENT"
+# ENV MySqlCon="Uzak Sunucu Veritabaný Yolu"
 ENTRYPOINT ["dotnet", "DockerAspNetCoreMvc.dll"]
+
+
+# docker build -t dockeraspnetcoremvc:v5 .
+# docker build --no-cache -t dockeraspnetcoremvc:v5 .
+# docker run -d -p 5001:4500 --name dockeraspnetcoremvc-container-1 dockeraspnetcoremvc:v5
+# docker rm ce1 --force
+# docker ps -a
+
+# cls
+
+# docker run -d -p 5001:4500 --env ASPNETCORE_ENVIRONMENT=PRODUCTION --name dockeraspnetcoremvc-container-1 dockeraspnetcoremvc:v5
+# docker run -d -p 5001:4500 --env ASPNETCORE_ENVIRONMENT=STAGING --name dockeraspnetcoremvc-container-1 dockeraspnetcoremvc:v5
+# docker run -d -p 5001:4500 --env ASPNETCORE_ENVIRONMENT=DEVELOPMENT --name dockeraspnetcoremvc-container-1 dockeraspnetcoremvc:v5
+# docker rm 698 --force
+# docker ps -a
+
+# cls
+
+# docker images -f "dangling=true"
+# docker rmi $(docker images -f "dangling=true" -q)
+
+# cls
+
+# docker build -t dockeraspnetcoremvc:v6 .
+# docker run -d -p 5001:4500 --env MySqlCon='Uzak Sunucu Veritabaný Yolu' --name dockeraspnetcoremvc-container-1 dockeraspnetcoremvc:v6
+# docker run -d -p 5002:4500 --env ASPNETCORE_ENVIRONMENT=DEVELOPMENT -e MySqlCon='Uzak Sunucu Veritabaný Yolu' --name dockeraspnetcoremvc-container-2 dockeraspnetcoremvc:v6
+# docker rm b3d 485 --force
+# docker ps -a
+
+# cls
+
+# docker rm $(docker ps -q) --force
+# docker rm $(docker ps -a -q)
+
+
+
+####################################################################################################################################
+
+
+
+#FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+#WORKDIR /app
+#COPY *.csproj .
+#RUN dotnet restore
+#COPY . .
+#RUN dotnet publish DockerAspNetCoreMvc.csproj -c Release -o out
+
+#FROM mcr.microsoft.com/dotnet/aspnet:3.1
+#WORKDIR /app
+#COPY --from=build /app/out .
+#ENV ASPNETCORE_URLS="http://*:4500"
+#ENTRYPOINT ["dotnet", "DockerAspNetCoreMvc.dll"]
 
 
 # docker build -t dockeraspnetcoremvc:v3 .
